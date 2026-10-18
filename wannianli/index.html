@@ -56,6 +56,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 /* 历史 */
 .hist{background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:0 2px 8px var(--shadow);font-size:14px;line-height:1.7}
 .hist b{color:var(--red);margin-right:8px}
+a.hist{display:block;text-decoration:none;color:inherit;cursor:pointer}
+a.hist:active{background:var(--bg)}
+.hist .go{float:right;color:var(--sub);font-weight:700}
 .hdate{font-size:12px;color:var(--sub);font-weight:400}
 footer{text-align:center;color:var(--sub);font-size:12px;margin-top:36px}
 /* 电脑宽屏：双列 */
@@ -8744,7 +8747,9 @@ function renderHistory(m,d){
 var key=pad(m)+pad(d), arr=(typeof HISTORY!=='undefined'&&HISTORY[key])||[];
 document.getElementById('histDate').textContent='（'+m+'月'+d+'日）';
 document.getElementById('history').innerHTML=arr.length?arr.map(function(t){
-var p=t.split('——');return '<div class="hist"><b>'+(p[0]||'')+'</b>'+(p[1]||t)+'</div>';
+var p=t.split('——'), title=p[1]||t;
+var q=encodeURIComponent(title.replace(/，.*/,''));
+return '<a class="hist" href="https://www.bing.com/search?q='+q+'" target="_blank" rel="noopener"><span class="go">›</span><b>'+(p[0]||'')+'</b>'+title+'</a>';
 }).join(''):'<div class="hist">暂无数据</div>';
 }
 
