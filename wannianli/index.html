@@ -33,12 +33,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .cal-head button{border:0;background:var(--bg);border-radius:10px;width:36px;height:36px;font-size:18px;cursor:pointer;color:var(--text)}
 .week{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:12px;color:var(--sub);margin-bottom:6px}
 .days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
-.day{border-radius:10px;padding:7px 2px;text-align:center;cursor:pointer;min-height:56px;position:relative}
+.day{border-radius:10px;padding:7px 2px;text-align:center;cursor:pointer;min-height:56px}
 .day:hover{background:var(--bg)}
 .day .s{font-size:15px;font-weight:600}
 .day .l{font-size:10px;color:var(--sub);margin-top:2px;white-space:nowrap;overflow:hidden}
 .day .l.fest{color:var(--red);font-weight:700}
-.htag{position:absolute;top:3px;right:5px;font-size:10px;font-weight:700;line-height:1}
+.htag{display:inline-block;font-size:10px;font-weight:700;line-height:1;margin-right:2px;vertical-align:2px}
 .htag.rest{color:var(--red)}
 .htag.work{color:#1e6fd9}
 .day.today .htag{color:#fff}
@@ -136,19 +136,29 @@ if(h.work.indexOf(k)>=0)return 'work';
 return '';
 }
 
-/* ===== 今日卡 ===== */
-(function(){
-var s=S(now.getFullYear(),now.getMonth()+1,now.getDate());
+/* ===== 黄历卡（跟随选中日期，默认今天）===== */
+function renderHuangli(y,m,d){
+var s=S(y,m,d);
 var l=s.getLunar();
 var yi=l.getDayYi().slice(0,8), ji=l.getDayJi().slice(0,8);
+var t=new Date();
+var isToday=(y===t.getFullYear()&&m===t.getMonth()+1&&d===t.getDate());
 document.getElementById('todayCard').innerHTML=
-'<div class="solar">'+s.getYear()+'年'+s.getMonth()+'月'+s.getDay()+'日 '+WEEK[s.getWeek()]+'</div>'+
+'<div class="solar">'+s.getYear()+'年'+s.getMonth()+'月'+s.getDay()+'日 '+WEEK[s.getWeek()]+(isToday?'':' <a href="javascript:;" id="backToday" style="color:var(--red);font-size:13px;text-decoration:underline">回今天</a>')+'</div>'+
 '<div class="big">'+s.getDay()+'</div>'+
 '<div class="lunar">农历'+l.getMonthInChinese()+'月'+l.getDayInChinese()+(l.getFestivals().length?' · '+l.getFestivals().join(' '):'')+'</div>'+
 '<div class="ganzhi">'+l.getYearInGanZhi()+'年('+l.getYearShengXiao()+') · '+l.getMonthInGanZhi()+'月 · '+l.getDayInGanZhi()+'日 · 冲'+l.getDayChongShengXiao()+'</div>'+
 '<div class="yiji"><div class="yi"><h4>✅ 宜</h4>'+yi.map(function(x){return '<span>'+x+'</span>'}).join('')+'</div>'+
 '<div class="ji"><h4>❌ 忌</h4>'+ji.map(function(x){return '<span>'+x+'</span>'}).join('')+'</div></div>';
-})();
+var bt=document.getElementById('backToday');
+if(bt)bt.onclick=function(){
+selKey=null;renderCal();
+var dd=document.getElementById('detail');dd.className='detail';dd.innerHTML='';
+var t2=new Date();renderHuangli(t2.getFullYear(),t2.getMonth()+1,t2.getDate());
+histM=t2.getMonth()+1;histD=t2.getDate();renderHistory(histM,histD);
+};
+}
+renderHuangli(now.getFullYear(),now.getMonth()+1,now.getDate());
 
 /* ===== 日历 ===== */
 function renderCal(){
@@ -176,12 +186,13 @@ if(yy===t.getFullYear()&&mm===t.getMonth()+1&&d===t.getDate())cls+=' today';
 if(key===selKey)cls+=' sel';
 var hf=holFlag(yy,mm,d);
 var tag=hf==='rest'?'<span class="htag rest">休</span>':(hf==='work'?'<span class="htag work">班</span>':'');
-return '<div class="'+cls+'" data-k="'+key+'">'+tag+'<div class="s">'+d+'</div><div class="l'+(fest.length||jq?' fest':'')+'">'+label+'</div></div>';
+return '<div class="'+cls+'" data-k="'+key+'"><div class="s">'+tag+d+'</div><div class="l'+(fest.length||jq?' fest':'')+'">'+label+'</div></div>';
 }
 document.getElementById('days').addEventListener('click',function(e){
 var el=e.target.closest('.day');if(!el)return;
 selKey=el.getAttribute('data-k');
 renderCal();showDetail(selKey);
+var p=selKey.split('-');renderHuangli(+p[0],+p[1],+p[2]);
 });
 document.getElementById('prevM').onclick=function(){viewM--;if(viewM<1){viewM=12;viewY--;}renderCal();};
 document.getElementById('nextM').onclick=function(){viewM++;if(viewM>12){viewM=1;viewY++;}renderCal();};
