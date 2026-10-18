@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>工作主页 · 刘海泉</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#f4f1ea;--card:#fffdf8;--text:#2b2620;--sub:#8a8272;--red:#c0392b;--green:#1e7e34;--shadow:rgba(120,90,40,.10)}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.wrap{max-width:720px;margin:0 auto;padding:8px 14px 60px}
+.sec{margin-top:22px}
+.wrap>.sec:first-child{margin-top:6px}
+.sec h2{font-size:17px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sec h2::before{content:"";width:4px;height:18px;background:var(--red);border-radius:2px}
+.card{background:var(--card);border-radius:18px;padding:6px 18px;box-shadow:0 3px 14px var(--shadow)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 0;border-bottom:1px solid rgba(120,90,40,.12)}
+.row:last-child{border-bottom:0}
+.row .k{font-size:13px;color:var(--sub);flex-shrink:0;width:64px}
+.row .v{font-size:15px;flex:1;word-break:break-all}
+.row .v a{color:inherit;text-decoration:none}
+.copy{border:1px solid rgba(120,90,40,.25);background:var(--bg);color:var(--text);border-radius:8px;font-size:12px;padding:6px 12px;cursor:pointer;flex-shrink:0}
+.copy:active{background:#e8e0d0}
+.copy.ok{color:var(--green);border-color:var(--green)}
+.bigbtn{display:block;width:100%;border:0;background:var(--red);color:#fff;border-radius:14px;font-size:16px;font-weight:700;padding:15px;margin-top:16px;cursor:pointer;box-shadow:0 3px 14px var(--shadow)}
+.bigbtn:active{opacity:.85}
+.bigbtn.ok{background:var(--green)}
+.head{background:var(--card);border-radius:18px;padding:26px 20px;box-shadow:0 3px 14px var(--shadow);border-top:4px solid var(--red);text-align:center;margin-top:6px}
+.head .name{font-size:24px;font-weight:800}
+.head .co{font-size:14px;color:var(--sub);margin-top:8px}
+footer{text-align:center;color:var(--sub);font-size:12px;margin-top:36px}
+.toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;font-size:14px;padding:10px 20px;border-radius:20px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99}
+.toast.show{opacity:1}
+@media (prefers-color-scheme:dark){
+:root{--bg:#1a1712;--card:#242019;--text:#e8e0d0;--sub:#9a8f78;--shadow:rgba(0,0,0,.4)}
+.copy{background:#2e2820}
+.copy:active{background:#3a332a}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="head">
+<div class="name">刘海泉</div>
+<div class="co">长春城开农投畜牧发展有限公司</div>
+</div>
+
+<div class="sec">
+<h2>🧾 开票信息</h2>
+<div class="card" id="invoiceCard"></div>
+<button class="bigbtn" id="copyAll">一键复制全部开票信息</button>
+</div>
+
+<div class="sec">
+<h2>📮 文件邮寄地址</h2>
+<div class="card" id="mailCard"></div>
+</div>
+
+<div class="sec">
+<h2>✉️ 邮箱</h2>
+<div class="card" id="mailAddrCard"></div>
+</div>
+
+<footer>工作主页 · 信息如有变更请及时更新</footer>
+</div>
+<div class="toast" id="toast">已复制</div>
+<script>
+var INVOICE=[
+["公司名称","长春城开农投畜牧发展有限公司"],
+["税号","91220102MA17UFQT2D"],
+["地址","长春市高新开发区创新路669号军转创业基地大楼101-81卡位"],
+["电话","0431-80541620"],
+["开户行","盛京银行股份有限公司长春景阳支行"],
+["账号","1212160102000002212"]
+];
+var MAIL=[
+["收件人","刘海泉"],
+["电话","13630558587","tel:13630558587"],
+["地址","长春市亚泰大街2633号城开大厦"]
+];
+var EMAIL=[["邮箱","liuhaiquana@126.com","mailto:liuhaiquana@126.com"]];
+
+function toast(msg){
+var t=document.getElementById('toast');
+t.textContent=msg||'已复制';t.className='toast show';
+setTimeout(function(){t.className='toast';},1500);
+}
+function copyText(txt,btn){
+function done(){toast('已复制');if(btn){btn.textContent='已复制';btn.className='copy ok';setTimeout(function(){btn.textContent='复制';btn.className='copy';},1500);}}
+if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done).catch(function(){fallback();});}
+else fallback();
+function fallback(){var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(e){}document.body.removeChild(ta);}
+}
+function renderCard(id,rows){
+document.getElementById(id).innerHTML=rows.map(function(r){
+var v=r[2]?'<a href="'+r[2]+'">'+r[1]+'</a>':r[1];
+return '<div class="row"><div class="k">'+r[0]+'</div><div class="v">'+v+'</div><button class="copy" data-v="'+r[1].replace(/"/g,'&quot;')+'">复制</button></div>';
+}).join('');
+}
+renderCard('invoiceCard',INVOICE);
+renderCard('mailCard',MAIL);
+renderCard('mailAddrCard',EMAIL);
+document.addEventListener('click',function(e){
+if(e.target.className&&e.target.className.indexOf('copy')>=0){copyText(e.target.getAttribute('data-v'),e.target);}
+});
+document.getElementById('copyAll').onclick=function(){
+var txt=INVOICE.map(function(r){return r[0]+'：'+r[1];}).join('\n');
+var btn=this;
+copyText(txt,null);
+toast('开票信息已复制');
+btn.textContent='已复制';btn.className='bigbtn ok';
+setTimeout(function(){btn.textContent='一键复制全部开票信息';btn.className='bigbtn';},1500);
+};
+</script>
+</body>
+</html>
