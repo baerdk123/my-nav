@@ -17,6 +17,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .today-card .big{font-size:52px;font-weight:800;margin:6px 0;line-height:1}
 .today-card .lunar{font-size:16px;margin-top:4px}
 .today-card .ganzhi{font-size:13px;color:var(--sub);margin-top:8px}
+.today-card .pengzu{font-size:12px;color:var(--sub);margin-top:6px}
 .yiji{display:flex;gap:10px;margin-top:16px;text-align:left}
 .yiji>div{flex:1;background:var(--bg);border-radius:12px;padding:12px}
 .yiji h4{font-size:14px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
@@ -46,11 +47,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .day.sel{outline:2px solid var(--red);outline-offset:-2px;background:rgba(192,57,43,.10)}
 .day.other{opacity:.28}
 /* 选中日详情 */
-.detail{display:none!important;background:var(--card);border-radius:18px;padding:18px;margin-top:12px;box-shadow:0 3px 14px var(--shadow);display:none}
-.detail.show{display:block}
-.detail h3{font-size:16px;margin-bottom:10px}
-.detail .row{font-size:14px;margin:6px 0;color:var(--text)}
-.detail .row b{color:var(--sub);font-weight:400;margin-right:8px}
 /* 倒数日 */
 .count{background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:0 2px 8px var(--shadow);display:flex;align-items:center;justify-content:space-between}
 .count .n{font-size:15px;font-weight:600}
@@ -91,7 +87,6 @@ footer{text-align:center;color:var(--sub);font-size:12px;margin-top:36px}
 <div class="week"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
 <div class="days" id="days"></div>
 </div>
-<div class="detail" id="detail"></div>
 </div>
 
 <div class="today-card" id="todayCard"></div>
@@ -8646,6 +8641,7 @@ document.getElementById('todayCard').innerHTML=
 '<div class="big">'+s.getDay()+'</div>'+
 '<div class="lunar">农历'+l.getMonthInChinese()+'月'+l.getDayInChinese()+(l.getFestivals().length?' · '+l.getFestivals().join(' '):'')+'</div>'+
 '<div class="ganzhi">'+l.getYearInGanZhi()+'年('+l.getYearShengXiao()+') · '+l.getMonthInGanZhi()+'月 · '+l.getDayInGanZhi()+'日 · 冲'+l.getDayChongShengXiao()+'</div>'+
+'<div class="pengzu">彭祖百忌：'+l.getPengZuGan()+' '+l.getPengZuZhi()+'</div>'+
 '<div class="yiji"><div class="yi"><h4>✅ 宜</h4>'+yi.map(function(x){return '<span>'+x+'</span>'}).join('')+'</div>'+
 '<div class="ji"><h4>❌ 忌</h4>'+ji.map(function(x){return '<span>'+x+'</span>'}).join('')+'</div></div>';
 var bt=document.getElementById('backToday');
@@ -8654,7 +8650,6 @@ var t2=new Date();
 selKey=dateKey(t2.getFullYear(),t2.getMonth()+1,t2.getDate());
 viewY=t2.getFullYear();viewM=t2.getMonth()+1;
 renderCal();
-var dd=document.getElementById('detail');dd.className='detail';dd.innerHTML='';
 renderHuangli(t2.getFullYear(),t2.getMonth()+1,t2.getDate());
 histM=t2.getMonth()+1;histD=t2.getDate();renderHistory(histM,histD);
 };
@@ -8709,29 +8704,6 @@ if(e.key==='Enter'||e.key===' '){var el=e.target.closest('.day');if(el){e.preven
 document.getElementById('prevM').onclick=function(){viewM--;if(viewM<1){viewM=12;viewY--;}renderCal();};
 document.getElementById('nextM').onclick=function(){viewM++;if(viewM>12){viewM=1;viewY++;}renderCal();};
 
-function showDetail(key){
-var p=key.split('-'), s=S(+p[0],+p[1],+p[2]), l=s.getLunar();
-var el=document.getElementById('detail');
-try{
-var fest=l.getFestivals().concat(l.getOtherFestivals());
-var hf=holFlag(+p[0],+p[1],+p[2]);
-var holRow=hf==='rest'?'<div class="row"><b>假日</b><span style="color:#c0392b;font-weight:700">休 · 法定节假日</span></div>':(hf==='work'?'<div class="row"><b>假日</b><span style="color:#1e6fd9;font-weight:700">班 · 调休上班</span></div>':'');
-el.className='detail show';
-el.innerHTML='<h3>'+p[0]+'年'+(+p[1])+'月'+(+p[2])+'日 '+WEEK[s.getWeek()]+(fest.length?' · '+fest.join(' '):'')+'</h3>'+holRow+
-'<div class="row"><b>农历</b>'+l.getYearInChinese()+'年'+l.getMonthInChinese()+'月'+l.getDayInChinese()+((typeof l.isLeapMonth==='function'&&l.isLeapMonth())?'（闰月）':'')+'</div>'+
-'<div class="row"><b>干支</b>'+l.getYearInGanZhi()+'年 '+l.getMonthInGanZhi()+'月 '+l.getDayInGanZhi()+'日</div>'+
-'<div class="row"><b>生肖</b>'+l.getYearShengXiao()+' · 冲'+l.getDayChongShengXiao()+'</div>'+
-'<div class="row"><b>彭祖</b>'+l.getPengZuGan()+' '+l.getPengZuZhi()+'</div>'+
-'<div class="row"><b>宜</b>'+l.getDayYi().join('、')+'</div>'+
-'<div class="row"><b>忌</b>'+l.getDayJi().join('、')+'</div>';
-histM=+p[1];histD=+p[2];renderHistory(histM,histD);
-}catch(err){
-  el.className='detail';
-  el.innerHTML='';
-  console.warn('日期详情暂时无法显示：',err);
-}
-}
-
 /* ===== 节日倒数 ===== */
 var FESTS=[
 {n:'元旦',t:'s',m:1,d:1},
@@ -8766,8 +8738,7 @@ return '<div class="count"><div><div class="n">'+it.name+'</div><div class="d">'
 
 /* ===== 历史上的今天 ===== */
 var HISTORY={};
-// 原项目的 history.json 未随附件提供，因此这里保留空数据入口；
-// 如有历史数据，可直接把 JSON 内容放入 HISTORY 对象。
+fetch('history.json').then(function(r){return r.json();}).then(function(j){HISTORY=j;renderHistory(histM,histD);}).catch(function(){});
 
 function renderHistory(m,d){
 var key=pad(m)+pad(d), arr=(typeof HISTORY!=='undefined'&&HISTORY[key])||[];
