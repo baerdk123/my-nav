@@ -98,7 +98,7 @@ footer{text-align:center;color:var(--sub);font-size:12px;margin-top:36px}
 <script src="lunar.js"></script>
 <script>
 var WEEK=['周日','周一','周二','周三','周四','周五','周六'];
-function S(y,m,d){return Lunar.Solar.fromYmd(y,m,d);}
+function S(y,m,d){return Solar.fromYmd(y,m,d);}
 function pad(n){return (n<10?'0':'')+n;}
 var now=new Date();
 var viewY=now.getFullYear(), viewM=now.getMonth()+1;
@@ -183,8 +183,8 @@ var y=now.getFullYear();
 for(var k=0;k<2;k++){
 var dt=null;
 if(f.t==='s'){dt=new Date(y+k,f.m-1,f.d);}
-else if(f.t==='l'){var l=Lunar.Lunar.fromYmd(y+k,f.m,f.d);var s=l.getSolar();dt=new Date(s.getYear(),s.getMonth()-1,s.getDay());}
-else{var tab=Lunar.Lunar.fromYmd(y+k,1,1).getJieQiTable();var js=tab[f.q];if(js){dt=new Date(js.getYear(),js.getMonth()-1,js.getDay());}}
+else if(f.t==='l'){var l=Lunar.fromYmd(y+k,f.m,f.d);var s=l.getSolar();dt=new Date(s.getYear(),s.getMonth()-1,s.getDay());}
+else{var tab=Lunar.fromYmd(y+k,1,1).getJieQiTable();var js=tab[f.q];if(js){dt=new Date(js.getYear(),js.getMonth()-1,js.getDay());}}
 if(dt){var today=new Date(now.getFullYear(),now.getMonth(),now.getDate());if(dt>=today)return {date:dt,name:f.n};}
 }
 return null;
