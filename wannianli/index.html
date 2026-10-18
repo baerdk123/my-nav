@@ -9,7 +9,6 @@
 :root{--bg:#f4f1ea;--card:#fffdf8;--text:#2b2620;--sub:#8a8272;--red:#c0392b;--gold:#b8860b;--green:#1e7e34;--shadow:rgba(120,90,40,.10)}
 body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",serif;background:var(--bg);color:var(--text);min-height:100vh}
 .wrap{max-width:720px;margin:0 auto;padding:18px 14px 60px}
-a.back{display:inline-block;margin-bottom:10px;color:var(--sub);text-decoration:none;font-size:14px}
 /* 今日卡 */
 .today{background:var(--card);border-radius:18px;padding:22px 20px;box-shadow:0 3px 14px var(--shadow);border-top:4px solid var(--red);text-align:center}
 .today .solar{font-size:15px;color:var(--sub)}
@@ -67,9 +66,6 @@ footer{text-align:center;color:var(--sub);font-size:12px;margin-top:36px}
 </head>
 <body>
 <div class="wrap">
-<a class="back" href="../index.html">‹ 返回导航站</a>
-
-<div class="today" id="todayCard"></div>
 
 <div class="sec">
 <h2>📅 日历</h2>
@@ -82,6 +78,8 @@ footer{text-align:center;color:var(--sub);font-size:12px;margin-top:36px}
 </div>
 <div class="detail" id="detail"></div>
 </div>
+
+<div class="today" id="todayCard" style="margin-top:26px"></div>
 
 <div class="sec">
 <h2>⏳ 节日倒数</h2>
