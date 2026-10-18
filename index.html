@@ -72,11 +72,11 @@ var colors=['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899
 function bg(name){var h=0;for(var i=0;i<name.length;i++)h=(h*31+name.charCodeAt(i))>>>0;return colors[h%colors.length];}
 function domainOf(url){try{return new URL(url).hostname;}catch(e){return '';}}
 function card(s){
-var d=domainOf(s.u);
+var d=domainOf(s.url);
 var fav=d?('https://www.google.com/s2/favicons?domain='+d+'&sz=128'):'';
 var inner=fav?('<img src="'+fav+'" alt="" loading="lazy" onerror="this.parentNode.innerHTML=\''+s.title.charAt(0)+'\';this.parentNode.style.background=\''+bg(s.title)+'\';">'):s.title.charAt(0);
 var style=fav?'':' style="background:'+bg(s.title)+'"';
-return '<a class="card" href="'+s.u+'" target="_blank" rel="noopener"><div class="icon"'+style+'>'+inner+'</div><span class="name">'+s.title+'</span>'+(s.desc?'<span class="desc">'+s.desc+'</span>':'')+'</a>';
+return '<a class="card" href="'+s.url+'" target="_blank" rel="noopener"><div class="icon"'+style+'>'+inner+'</div><span class="name">'+s.title+'</span>'+(s.desc?'<span class="desc">'+s.desc+'</span>':'')+'</a>';
 }
 var groups=[
 [
