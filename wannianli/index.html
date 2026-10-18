@@ -11,12 +11,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .wrap{max-width:720px;margin:0 auto;padding:8px 14px 60px}
 .cols>.col-main>.sec:first-child{margin-top:6px}
 /* 今日卡 */
-.today{margin-top:26px}
-.today{background:var(--card);border-radius:18px;padding:22px 20px;box-shadow:0 3px 14px var(--shadow);border-top:4px solid var(--red);text-align:center}
-.today .solar{font-size:15px;color:var(--sub)}
-.today .big{font-size:52px;font-weight:800;margin:6px 0;line-height:1}
-.today .lunar{font-size:16px;margin-top:4px}
-.today .ganzhi{font-size:13px;color:var(--sub);margin-top:8px}
+.today-card{margin-top:26px}
+.today-card{background:var(--card);border-radius:18px;padding:22px 20px;box-shadow:0 3px 14px var(--shadow);border-top:4px solid var(--red);text-align:center}
+.today-card .solar{font-size:15px;color:var(--sub)}
+.today-card .big{font-size:52px;font-weight:800;margin:6px 0;line-height:1}
+.today-card .lunar{font-size:16px;margin-top:4px}
+.today-card .ganzhi{font-size:13px;color:var(--sub);margin-top:8px}
 .yiji{display:flex;gap:10px;margin-top:16px;text-align:left}
 .yiji>div{flex:1;background:var(--bg);border-radius:12px;padding:12px}
 .yiji h4{font-size:14px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
@@ -43,7 +43,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .htag.work{color:#1e6fd9}
 .day.today{box-shadow:inset 0 0 0 2px var(--red)}
 .day.today .s{color:var(--red)}
-.day.sel{outline:2px solid var(--red);outline-offset:-2px}
+.day.sel{outline:2px solid var(--red);outline-offset:-2px;background:rgba(192,57,43,.10)}
 .day.other{opacity:.28}
 /* 选中日详情 */
 .detail{background:var(--card);border-radius:18px;padding:18px;margin-top:12px;box-shadow:0 3px 14px var(--shadow);display:none}
@@ -68,7 +68,7 @@ footer{text-align:center;color:var(--sub);font-size:12px;margin-top:36px}
 .cols{display:grid;grid-template-columns:1.15fr 1fr;gap:22px;align-items:start}
 .cols .sec{margin-top:0}
 .cols .col-side .sec+.sec{margin-top:22px}
-.cols .today{margin-top:18px}
+.cols .today-card{margin-top:18px}
 }
 @media (prefers-color-scheme:dark){
 :root{--bg:#1a1712;--card:#242019;--text:#e8e0d0;--sub:#9a8f78;--shadow:rgba(0,0,0,.4)}
@@ -94,7 +94,7 @@ footer{text-align:center;color:var(--sub);font-size:12px;margin-top:36px}
 <div class="detail" id="detail"></div>
 </div>
 
-<div class="today" id="todayCard"></div>
+<div class="today-card" id="todayCard"></div>
 </div>
 <div class="col-side">
 
@@ -119,7 +119,10 @@ function S(y,m,d){return Solar.fromYmd(y,m,d);}
 function pad(n){return (n<10?'0':'')+n;}
 var now=new Date();
 var viewY=now.getFullYear(), viewM=now.getMonth()+1;
-var selKey=null;
+function dateKey(y,m,d){return y+'-'+pad(m)+'-'+pad(d);}
+function parseKey(key){var p=key.split('-');return {y:+p[0],m:+p[1],d:+p[2]};}
+function todayKey(){var t=new Date();return dateKey(t.getFullYear(),t.getMonth()+1,t.getDate());}
+var selKey=todayKey();
 var histM=now.getMonth()+1, histD=now.getDate();
 
 /* ===== 法定节假日调休（国务院办公厅）rest=放假 work=调休上班 ===== */
@@ -150,9 +153,12 @@ document.getElementById('todayCard').innerHTML=
 '<div class="ji"><h4>❌ 忌</h4>'+ji.map(function(x){return '<span>'+x+'</span>'}).join('')+'</div></div>';
 var bt=document.getElementById('backToday');
 if(bt)bt.onclick=function(){
-selKey=null;renderCal();
+var t2=new Date();
+selKey=dateKey(t2.getFullYear(),t2.getMonth()+1,t2.getDate());
+viewY=t2.getFullYear();viewM=t2.getMonth()+1;
+renderCal();
 var dd=document.getElementById('detail');dd.className='detail';dd.innerHTML='';
-var t2=new Date();renderHuangli(t2.getFullYear(),t2.getMonth()+1,t2.getDate());
+renderHuangli(t2.getFullYear(),t2.getMonth()+1,t2.getDate());
 histM=t2.getMonth()+1;histD=t2.getDate();renderHistory(histM,histD);
 };
 }
@@ -160,9 +166,9 @@ renderHuangli(now.getFullYear(),now.getMonth()+1,now.getDate());
 
 /* ===== 日历 ===== */
 function renderCal(){
-var first=new Date(viewY,viewM-1,1).getDay();
-var dim=new Date(viewY,viewM,0).getDate();
-var prevDim=new Date(viewY,viewM-1,0).getDate();
+var first=new Date(viewY,viewM-1,1,12).getDay();
+var dim=new Date(viewY,viewM,0,12).getDate();
+var prevDim=new Date(viewY,viewM-1,0,12).getDate();
 document.getElementById('calTitle').textContent=viewY+'年'+viewM+'月';
 var html='', i, d, key;
 for(i=first-1;i>=0;i--){d=prevDim-i;html+=dayCell(viewY,viewM-1,d,true);}
@@ -172,27 +178,34 @@ for(d=1;d<=tail;d++){html+=dayCell(viewY,viewM+1,d,true);}
 document.getElementById('days').innerHTML=html;
 }
 function dayCell(y,m,d,other){
-var mm=((m-1+12)%12)+1, yy=y+(m<1?-1:(m>12?1:0));
-var s=S(yy,mm,d), l=s.getLunar();
+/* 通过 Date 归一化月份，避免 1 月上一月、12 月下一月出现错位 */
+var dt=new Date(y,m-1,d,12), yy=dt.getFullYear(), mm=dt.getMonth()+1, dd=dt.getDate();
+var s=S(yy,mm,dd), l=s.getLunar();
 var fest=l.getFestivals().concat(l.getOtherFestivals());
 var jq=l.getJieQi();
 var label=fest.length?fest[0]:(jq?jq:(l.getDay()==1?l.getMonthInChinese()+'月':l.getDayInChinese()));
-var key=yy+'-'+pad(mm)+'-'+pad(d);
+var key=dateKey(yy,mm,dd);
 var cls='day'+(other?' other':'');
 var t=new Date();
-if(yy===t.getFullYear()&&mm===t.getMonth()+1&&d===t.getDate())cls+=' today';
+if(yy===t.getFullYear()&&mm===t.getMonth()+1&&dd===t.getDate())cls+=' today';
 if(key===selKey)cls+=' sel';
-var hf=holFlag(yy,mm,d);
+var hf=holFlag(yy,mm,dd);
 var tag=hf==='rest'?'<span class="htag rest">休</span>':(hf==='work'?'<span class="htag work">班</span>':'');
-return '<div class="'+cls+'" data-k="'+key+'"><div class="s">'+tag+d+'</div><div class="l'+(fest.length||jq?' fest':'')+'">'+label+'</div></div>';
+return '<div class="'+cls+'" data-k="'+key+'" role="button" tabindex="0" aria-label="'+yy+'年'+mm+'月'+dd+'日"><div class="s">'+tag+dd+'</div><div class="l'+(fest.length||jq?' fest':'')+'">'+label+'</div></div>';
 }
 document.getElementById('days').addEventListener('click',function(e){
 var el=e.target.closest('.day');if(!el)return;
 selKey=el.getAttribute('data-k');
+var picked=parseKey(selKey);
+/* 点击上月/下月日期时，先切换到该日期所属月份 */
+viewY=picked.y; viewM=picked.m;
 renderCal();showDetail(selKey);
-var p=selKey.split('-');renderHuangli(+p[0],+p[1],+p[2]);
+renderHuangli(picked.y,picked.m,picked.d);
 var tc=document.getElementById('todayCard');
 if(tc&&tc.scrollIntoView)tc.scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+document.getElementById('days').addEventListener('keydown',function(e){
+if(e.key==='Enter'||e.key===' '){var el=e.target.closest('.day');if(el){e.preventDefault();el.click();}}
 });
 document.getElementById('prevM').onclick=function(){viewM--;if(viewM<1){viewM=12;viewY--;}renderCal();};
 document.getElementById('nextM').onclick=function(){viewM++;if(viewM>12){viewM=1;viewY++;}renderCal();};
@@ -233,7 +246,7 @@ var dt=null;
 if(f.t==='s'){dt=new Date(y+k,f.m-1,f.d);}
 else if(f.t==='l'){var l=Lunar.fromYmd(y+k,f.m,f.d);var s=l.getSolar();dt=new Date(s.getYear(),s.getMonth()-1,s.getDay());}
 else{var tab=Lunar.fromYmd(y+k,1,1).getJieQiTable();var js=tab[f.q];if(js){dt=new Date(js.getYear(),js.getMonth()-1,js.getDay());}}
-if(dt){var today=new Date(now.getFullYear(),now.getMonth(),now.getDate());if(dt>=today)return {date:dt,name:f.n};}
+if(dt){var today=new Date(now.getFullYear(),now.getMonth(),now.getDate(),12);if(dt>=today)return {date:dt,name:f.n};}
 }
 return null;
 }
@@ -241,7 +254,7 @@ return null;
 var items=FESTS.map(nextFest).filter(Boolean);
 items.sort(function(a,b){return a.date-b.date;});
 document.getElementById('counts').innerHTML=items.map(function(it){
-var diff=Math.round((it.date-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/86400000);
+var diff=Math.round((new Date(it.date.getFullYear(),it.date.getMonth(),it.date.getDate(),12)-new Date(now.getFullYear(),now.getMonth(),now.getDate(),12))/86400000);
 return '<div class="count"><div><div class="n">'+it.name+'</div><div class="d">'+it.date.getFullYear()+'年'+(it.date.getMonth()+1)+'月'+it.date.getDate()+'日</div></div><div class="left">'+(diff===0?'今天':diff+'<small> 天</small>')+'</div></div>';
 }).join('');
 })();
@@ -258,6 +271,7 @@ var p=t.split('——');return '<div class="hist"><b>'+(p[0]||'')+'</b>'+(p[1]||
 }
 
 renderCal();
+showDetail(selKey);
 </script>
 </body>
 </html>
