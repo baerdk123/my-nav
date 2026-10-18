@@ -46,7 +46,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei
 .day.sel{outline:2px solid var(--red);outline-offset:-2px;background:rgba(192,57,43,.10)}
 .day.other{opacity:.28}
 /* 选中日详情 */
-.detail{background:var(--card);border-radius:18px;padding:18px;margin-top:12px;box-shadow:0 3px 14px var(--shadow);display:none}
+.detail{display:none!important;background:var(--card);border-radius:18px;padding:18px;margin-top:12px;box-shadow:0 3px 14px var(--shadow);display:none}
 .detail.show{display:block}
 .detail h3{font-size:16px;margin-bottom:10px}
 .detail .row{font-size:14px;margin:6px 0;color:var(--text)}
@@ -8658,6 +8658,8 @@ var dd=document.getElementById('detail');dd.className='detail';dd.innerHTML='';
 renderHuangli(t2.getFullYear(),t2.getMonth()+1,t2.getDate());
 histM=t2.getMonth()+1;histD=t2.getDate();renderHistory(histM,histD);
 };
+histM=m;histD=d;
+if(typeof renderHistory==='function')renderHistory(m,d);
 }
 renderHuangli(now.getFullYear(),now.getMonth()+1,now.getDate());
 
@@ -8698,7 +8700,6 @@ var picked=parseKey(selKey);
 viewY=picked.y; viewM=picked.m;
 renderCal();
 renderHuangli(picked.y,picked.m,picked.d);
-showDetail(selKey);
 var tc=document.getElementById('todayCard');
 if(tc&&tc.scrollIntoView)tc.scrollIntoView({behavior:'smooth',block:'nearest'});
 });
@@ -8765,10 +8766,11 @@ return '<div class="count"><div><div class="n">'+it.name+'</div><div class="d">'
 
 /* ===== 历史上的今天 ===== */
 var HISTORY={};
-fetch('history.json').then(function(r){return r.json();}).then(function(j){HISTORY=j;renderHistory(histM,histD);}).catch(function(){});
+// 原项目的 history.json 未随附件提供，因此这里保留空数据入口；
+// 如有历史数据，可直接把 JSON 内容放入 HISTORY 对象。
 
 function renderHistory(m,d){
-var key=pad(m)+pad(d), arr=HISTORY[key]||[];
+var key=pad(m)+pad(d), arr=(typeof HISTORY!=='undefined'&&HISTORY[key])||[];
 document.getElementById('histDate').textContent='（'+m+'月'+d+'日）';
 document.getElementById('history').innerHTML=arr.length?arr.map(function(t){
 var p=t.split('——');return '<div class="hist"><b>'+(p[0]||'')+'</b>'+(p[1]||t)+'</div>';
@@ -8776,7 +8778,6 @@ var p=t.split('——');return '<div class="hist"><b>'+(p[0]||'')+'</b>'+(p[1]||
 }
 
 renderCal();
-showDetail(selKey);
 </script>
 </body>
 </html>
