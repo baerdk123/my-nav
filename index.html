@@ -68,7 +68,7 @@ footer{text-align:center;color:var(--sub);font-size:12px;margin-top:44px}
 <script>
 function goSearch(e){e.preventDefault();var q=document.getElementById('q').value.trim();if(!q)return false;window.open(document.getElementById('engine').value+encodeURIComponent(q),'_blank');return false;}
 function card(s){
-return '<a class="card" href="'+s.url+'" target="_blank" rel="noopener"><div class="icon"><img src="icons/'+s.icon+'" alt="'+s.title+'" loading="lazy"></div><span class="name">'+s.title+'</span>'+(s.desc?'<span class="desc">'+s.desc+'</span>':'')+'</a>';
+return '<a class="card" href="'+s.url+'" target="_blank" rel="noopener"><div class="icon"><img src="'+s.icon+'" alt="'+s.title+'" loading="lazy"></div><span class="name">'+s.title+'</span>'+(s.desc?'<span class="desc">'+s.desc+'</span>':'')+'</a>';
 }
 var groups=[
 [
