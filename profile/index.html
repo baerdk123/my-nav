@@ -50,17 +50,6 @@ footer{text-align:center;color:var(--sub);font-size:12px;margin-top:36px}
 </div>
 
 <div class="sec">
-<h2>🧾 开票信息</h2>
-<div class="card" id="invoiceCard"></div>
-<button class="bigbtn" id="copyAll">一键复制全部开票信息</button>
-</div>
-
-<div class="sec">
-<h2>📮 文件邮寄地址</h2>
-<div class="card" id="mailCard"></div>
-</div>
-
-<div class="sec">
 <h2>📍 地址导航</h2>
 <div class="card">
 <div class="row"><div class="k">办公地址</div><div class="v">长春城开农投畜牧发展有限公司（绿色循环畜牧产业示范园）<div class="sub">农安县巴吉垒镇陶家窝铺六队南 · 养殖园区正门</div></div><a class="navbtn" href="https://surl.amap.com/31s2NpnQ1iavc">导航 ›</a></div>
@@ -69,8 +58,14 @@ footer{text-align:center;color:var(--sub);font-size:12px;margin-top:36px}
 </div>
 
 <div class="sec">
-<h2>✉️ 邮箱</h2>
-<div class="card" id="mailAddrCard"></div>
+<h2>📮 文件邮寄地址</h2>
+<div class="card" id="mailCard"></div>
+</div>
+
+<div class="sec">
+<h2>🧾 开票信息</h2>
+<div class="card" id="invoiceCard"></div>
+<button class="bigbtn" id="copyAll">一键复制全部开票信息</button>
 </div>
 
 <footer>工作主页 · 信息如有变更请及时更新</footer>
@@ -88,9 +83,9 @@ var INVOICE=[
 var MAIL=[
 ["收件人","刘海泉"],
 ["电话","13630558587","tel:13630558587"],
-["地址","长春市亚泰大街2633号城开大厦"]
+["地址","长春市亚泰大街2633号城开大厦"],
+["邮箱","liuhaiquana@126.com","mailto:liuhaiquana@126.com"]
 ];
-var EMAIL=[["邮箱","liuhaiquana@126.com","mailto:liuhaiquana@126.com"]];
 
 function toast(msg){
 var t=document.getElementById('toast');
@@ -111,7 +106,6 @@ return '<div class="row"><div class="k">'+r[0]+'</div><div class="v">'+v+'</div>
 }
 renderCard('invoiceCard',INVOICE);
 renderCard('mailCard',MAIL);
-renderCard('mailAddrCard',EMAIL);
 document.addEventListener('click',function(e){
 if(e.target.className&&e.target.className.indexOf('copy')>=0){copyText(e.target.getAttribute('data-v'),e.target);}
 });
